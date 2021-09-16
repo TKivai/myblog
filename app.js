@@ -1,10 +1,16 @@
 require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session')
+const mongodb_session = require('connect-mongodb-session')(session);
 const PORT = process.env.SERVER_PORT;
 const DB_CONN = process.env.MONGO_URI;
 
 const app = express();
+const session_store = new mongodb_session({
+    uri: DB_CONN,
+    collection: 'Sessions'
+});
 
 //Mongo DB Connection
 mongoose.connect(DB_CONN, { useNewUrlParser: true})
@@ -17,9 +23,16 @@ app.set('view engine', 'ejs');
 // Body Parser
 app.use(express.urlencoded({ extended: false }));
 
-// Routes
+//Session Middleware
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    store: session_store
+}));
 
-app.use('/users', require('./routes/users'));
+// Routes
+app.use('/users', require('./routes/auth'));
 app.use('/', require('./routes/index'));
 
 app.use((req, res, next) => {

@@ -1,0 +1,12 @@
+<% if (isAuthenticated ) { %>
+    <div>
+        <form action="/users/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+<% } %>
+
+<% if (!isAuthenticated) { %>
+    <a href="/users/login">Login</a>
+    <a href="/users/register">Register</a>
+<% } %>
