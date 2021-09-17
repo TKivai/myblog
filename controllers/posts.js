@@ -1,5 +1,7 @@
 const mongo = require('mongodb')
 const Post = require('../models/Post');
+const {format} = require('date-fns');
+const User = require('../models/User');
 
 
 exports.getCreatePostView = (req, res) => {
@@ -25,7 +27,6 @@ exports.postCreatePostView = (req, res) => {
         title: req.body.post_title,
         body: req.body.post_body
     });
-    console.log(newPost);
     newPost.save()
     .then(post => {
         res.redirect('/posts');
@@ -35,47 +36,64 @@ exports.postCreatePostView = (req, res) => {
 
 
 exports.getPosts = (req, res) => {
-    Post.find()
+    const postsPerPage = 4;
+    const currentPage = req.query.page || 1;
+    let numPages;
+
+    Post.countDocuments()
+    .then((numPosts) => {
+      numPages = Math.ceil(numPosts/postsPerPage);
+      return Post.find()
+        .skip((currentPage - 1) * postsPerPage)
+        .limit(postsPerPage);
+    })
     .then(posts => {
-      console.log(posts);
+      // console.log(posts);
       res.render("posts/posts", {
         posts: posts,
-        isAuthenticated: req.session.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn,
+        currentPage: currentPage,
+        numPages: numPages
       });
     })
     .catch(err => {
       console.log(err);
     });
 
-    // res.render("posts", {
-    //     isAuthenticated: false,
-    // })
 }
 
 exports.getPost = (req, res) => {
     const postId = req.params.postId;
     Post.findOne({ _id: new mongo.ObjectId(postId) })
     .then(post => {
-      console.log(post.userid);
-      console.log(req.session.user._id)
       let canEdit = false;
-      if(post.userid.toString() == req.session.user._id.toString()){
+
+      if(typeof req.session.user == 'undefined'){
+        loggedInUserId = "none";
+      } else {
+        loggedInUserId = req.session.user._id.toString();
+      }
+
+      if(post.userid.toString() == loggedInUserId){
         canEdit = true;
       }
-      console.log(canEdit)
-      res.render("posts/post", {
-        post: post,
-        isAuthenticated: req.session.isLoggedIn,
-        canEdit: canEdit
+
+      User.findById(post.userid)
+      .then(postAuthorObject => {
+        res.render("posts/post", {
+          post: post,
+          isAuthenticated: req.session.isLoggedIn,
+          canEdit: canEdit,
+          authorName: postAuthorObject.name
+        });
+      })
+      .catch(err => {
+          console.log(err);
       });
     })
     .catch(err => {
       console.log(err);
     });
-
-    // res.render("posts", {
-    //     isAuthenticated: false,
-    // })
 }
 
 exports.editPost = (req, res) => {
@@ -89,14 +107,30 @@ exports.editPost = (req, res) => {
 
       post.save()
       .then(post => {
+        
         let canEdit = false;
-        if(post.userid.toString() == req.session.user._id.toString()){
+
+        if(typeof req.session.user == 'undefined'){
+          loggedInUserId = "none";
+        } else {
+          loggedInUserId = req.session.user._id.toString();
+        }
+
+        if(post.userid.toString() == loggedInUserId){
           canEdit = true;
         }
-        res.render("posts/post", {
-          post: post,
-          isAuthenticated: req.session.isLoggedIn,
-          canEdit: canEdit
+
+        User.findById(post.userid)
+        .then(postAuthorObject => {
+          res.render("posts/post", {
+            post: post,
+            isAuthenticated: req.session.isLoggedIn,
+            canEdit: canEdit,
+            authorName: postAuthorObject.name
+          });
+        })
+        .catch(err => {
+            console.log(err);
         });
       });
     })

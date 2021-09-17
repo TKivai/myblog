@@ -55,7 +55,6 @@ exports.getRegister = (req, res) => {
 
 exports.postRegister = (req, res) => {
     const {username, email, password, password2} = req.body;
-    console.log(username)
 
     let errors = [];
 
@@ -67,21 +66,25 @@ exports.postRegister = (req, res) => {
     //Check if passwords match
     if (password !== password2){
         errors.push({msg: "The passwords do not match"});
-        console.log(errors);
-        res.render("auth/register", { errors: errors });
+        res.render("auth/register", {
+             errors: errors,
+             isAuthenticated: false
+        });
     } else {
         User.findOne({ email: email })
         .then(user => {
             if (user) {
                 errors.push({msg: "Email is already registered"});
-                res.render("auth/register", { errors: errors });
+                res.render("auth/register", {
+                     errors: errors,
+                     isAuthenticated: false
+                });
             } else {
                 const newUser = new User({
                     name: username,
                     email,
                     password
                 });
-                console.log(newUser);
 
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {

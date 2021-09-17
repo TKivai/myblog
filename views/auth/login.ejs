@@ -1,15 +1,29 @@
-<h1>Login here</h1>
+<%- include ("../partials/header"); %>
+
+<div class="page_content">
+
+<h1 class="mt-4">Login here</h1>
 
 <%- include ("../partials/messages"); %>
 
 <form action="/users/login" method="post">
     <div class="form-group">
         <label for="email" class="form-label mt-4">Email address</label>
-        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+        <div class="input-group w-50">
+            <span class="input-group-text" id="basic-addon1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+                </svg>
+            </span>
+            <input name="email" type="email" class="form-control" id="email" placeholder="Email" aria-label="Input group example" aria-describedby="basic-addon1">
+        </div>
     </div>
-    <div class="form-group">
+
+    <div class="form-group w-50">
         <label for="password" class="form-label mt-4">Password</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Password">
     </div>
     <button type="submit" class="btn btn-primary mt-4">Login</button>
 </form>
+
+</div>
