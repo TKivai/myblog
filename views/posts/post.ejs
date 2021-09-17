@@ -1,0 +1,46 @@
+<%- include ("../partials/header"); %>
+
+<h1 style="margin: 0 auto;" class="mt-5">View Post</h1>
+
+<form action="/posts/edit/<%= post.id %> " method="post">
+    <div class="form-group">
+        <label for="post_title" class="col-sm-2 col-form-label">Post Title</label>
+        <input type="text" class="form-control" name="post_title" id="post_title" readonly value="<%= post.title %>">
+    </div>
+    <!-- <fieldset>
+        <label class="form-label mt-4" for="readOnlyInput">Readonly input</label>
+        <input class="form-control" id="readOnlyInput" type="text" placeholder="Readonly input here..." readonly="">
+      </fieldset> -->
+    <div class="form-group">
+        <label for="post_body" class="form-label col-form-label mt-4">Post Body</label>
+        <textarea class="form-control" name="post_body" id="post_body" rows="3" readonly><%= post.body %></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-4 invisible" id="submit_btn">Update Post</button>
+    
+</form>
+<% if (canEdit) { %>
+    <a href="#" class="btn btn-info " id="edit_btn" style="margin-right: 40px;">Edit</a>
+    <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_modal" id="delete_btn" style="margin-right: 40px;">Delete</a>
+<% } %>
+
+<div class="modal fade" id="delete_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this post?</p>
+        </div>
+        <div class="modal-footer">
+            <form action="/posts/delete/<%= post.id %>" method="post">
+                <button class="btn btn btn-primary" type="submit">Save changes</button>
+            </form>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-target="#delete_modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

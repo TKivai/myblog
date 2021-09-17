@@ -1,0 +1,17 @@
+<%- include ("../partials/header"); %>
+
+<h1>Create a Post</h1>
+
+<%- include ("../partials/messages"); %>
+
+<form action="/posts/create" method="post">
+    <div class="form-group">
+        <label for="post_title" class="col-sm-2 col-form-label">Post Title</label>
+        <input type="text" class="form-control" name="post_title" id="post_title">
+    </div>
+    <div class="form-group">
+        <label for="post_body" class="form-label col-form-label mt-4">Post Body</label>
+        <textarea class="form-control" name="post_body" id="post_body" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Create Post</button>
+</form>

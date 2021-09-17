@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const PostSchema = mongoose.Schema({
     userid: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     title: {
@@ -17,4 +18,12 @@ const PostSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
-});
+},
+    {
+        timestamps: true
+    }
+);
+
+const Post = mongoose.model('Post', PostSchema);
+
+module.exports = Post;

@@ -1,0 +1,28 @@
+<%- include ("../partials/header"); %>
+
+<h1 style="margin: 0 auto;" class="mt-5">View Posts</h1>
+
+
+<% if (isAuthenticated) { %>
+    <a style="display: block; width: 120px;"class="btn btn-success mt-5 mb-5" href="/posts/create">Create a Post</a>
+<% } %>
+
+<% if(typeof posts !== 'undefined'){ %>
+    <div class="blog_post_container">
+        <% posts.forEach(function(post) { %>
+            <div class="blog-card spring-fever">
+                <div class="title-content">
+                    <h3><a href="#"><%= post.title %> </a></h3>
+                </div>
+                <div class="card-info">
+                    <%= post.body %> 
+                </div>
+                <div class="card-end">
+                    <a href="/posts/<%= post.id %> ">Read Article<span class="licon icon-arr icon-black"></span></a>
+                </div>
+                <!-- <div class="gradient-overlay"></div>
+                <div class="color-overlay"></div> -->
+            </div><!-- /.blog-card -->
+        <% }); %>
+    </div>
+<% } %>
