@@ -4,7 +4,7 @@ const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const session = require('express-session')
 const mongodb_session = require('connect-mongodb-session')(session);
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const DB_CONN = "mongodb+srv://tkivai123:KjgVKU1A1srWKjz9@cluster0.pekpg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 const app = express();
