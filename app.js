@@ -4,8 +4,8 @@ const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const session = require('express-session')
 const mongodb_session = require('connect-mongodb-session')(session);
-const PORT = process.env.SERVER_PORT || 4000;
-const DB_CONN = process.env.MONGO_URI || "mongodb+srv://tkivai123:KjgVKU1A1srWKjz9@cluster0.pekpg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const PORT = 5000;
+const DB_CONN = "mongodb+srv://tkivai123:KjgVKU1A1srWKjz9@cluster0.pekpg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
