@@ -31,9 +31,10 @@ exports.postLogin = (req, res) => {
                 // req.session.user = user;
 
                 const token = generateAccessToken({userid: user._id});
-                res.cookie('token', token, { sameSite: "Lax"});
+                // res.cookie('token', token, { sameSite: "Lax"});
                 return res.status(200).json({
                     msg: "Success",
+                    token: token,
                     user: {
                         name: user.name,
                         email: user.email
