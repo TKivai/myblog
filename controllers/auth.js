@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.getLogin = (req, res) => {
@@ -26,13 +27,30 @@ exports.postLogin = (req, res) => {
         bcrypt.compare(password, user.password)
         .then(doesMatch =>{
             if (doesMatch) {
-                req.session.isLoggedIn = true;
-                req.session.user = user;
-                return req.session.save(err => {
-                    // console.log(err);
-                    res.redirect('/');
-                    // res.send("Login successfull");
+                // req.session.isLoggedIn = true;
+                // req.session.user = user;
+
+                const token = generateAccessToken({userid: user._id});
+                res.cookie('token', token, { sameSite: "Lax"});
+                return res.status(200).json({
+                    msg: "Success",
+                    user: {
+                        name: user.name,
+                        email: user.email
+                    }
                 });
+                // http://localhost:3000
+                // return req.session.save(err => {
+                //     // console.log(err);
+                //     // res.redirect('/');
+                //     // res.send("Login successfull");
+                //     const token = generateAccessToken({user: user._id});
+                //     res.cookie('token', token, { httpOnly: true });
+                //     res.status(200).json({
+                //         msg: "Success",
+                //         token: token
+                //     });
+                // });
             }
             res.redirect('/users/login');
         })
@@ -66,19 +84,21 @@ exports.postRegister = (req, res) => {
     //Check if passwords match
     if (password !== password2){
         errors.push({msg: "The passwords do not match"});
-        res.render("auth/register", {
-             errors: errors,
-             isAuthenticated: false
-        });
+        // res.render("auth/register", {
+        //      errors: errors,
+        //      isAuthenticated: false
+        // });
+        res.status(401).json(errors);
     } else {
         User.findOne({ email: email })
         .then(user => {
             if (user) {
                 errors.push({msg: "Email is already registered"});
-                res.render("auth/register", {
-                     errors: errors,
-                     isAuthenticated: false
-                });
+                // res.render("auth/register", {
+                //      errors: errors,
+                //      isAuthenticated: false
+                // });
+                res.status(401).json(errors);
             } else {
                 const newUser = new User({
                     name: username,
@@ -89,10 +109,15 @@ exports.postRegister = (req, res) => {
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) throw err;
-                        newUser.password = hash
+                        newUser.password = hash;
                         newUser.save()
                         .then(user => {
-                            res.redirect('/users/login');
+                            // res.redirect('/users/login');
+                            // res.status(200).json(user);
+                            const token = generateAccessToken({user: user._id});
+                            res.status(200).json({
+                                msg: "Success",
+                            });
                         })
                         .catch(err => console.log(err));
                     });
@@ -100,7 +125,9 @@ exports.postRegister = (req, res) => {
 
             }
         })
-        .catch();
+        .catch(err => {
+            console.log(err);
+        });
     }
 }
 
@@ -110,3 +137,7 @@ exports.logout = (req, res) => {
         res.redirect('/');
     });
 }
+
+function generateAccessToken(unique_identifier) {
+    return jwt.sign(unique_identifier, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+  }

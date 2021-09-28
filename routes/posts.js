@@ -1,17 +1,18 @@
 const express = require('express')
 const router = express.Router();
 const postsController = require('../controllers/posts');
-const authMiddleware = require('../middleware/authCheck');
+const sessionCheckMiddleware = require('../middleware/sessionCheck');
+const tokenCheckMiddleware = require('../middleware/tokenCheck');
 
 
-router.get('/', postsController.getPosts);
+router.get('/', tokenCheckMiddleware.authenticateToken, postsController.getPosts);
 
-router.get('/create', authMiddleware.isLoggedin, postsController.getCreatePostView);
-router.post('/create', postsController.postCreatePostView);
+router.get('/create', tokenCheckMiddleware.authenticateToken, postsController.getCreatePostView);
+router.post('/create', tokenCheckMiddleware.authenticateToken, postsController.postCreatePostView);
 
-router.get('/:postId', postsController.getPost);
+router.get('/:postId', tokenCheckMiddleware.authenticateToken, postsController.getPost);
 
-router.post('/edit/:postId', postsController.editPost);
-router.post('/delete/:postId', postsController.deletePost);
+router.post('/edit/:postId', tokenCheckMiddleware.authenticateToken, postsController.editPost);
+router.post('/delete/:postId', tokenCheckMiddleware.authenticateToken, postsController.deletePost);
 
 module.exports = router;

@@ -15,7 +15,7 @@
     <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_modal" id="delete_btn" role="button" style="width: max-content;">Delete</a>
     <hr class="my-5">
   </div>
-<% } %>
+
 
 <form action="/posts/edit/<%= post.id %>" method="post" class="edit_form my-5 col-md-7" id="edit_form" hidden>
   <h1 class="col-sm-3" style="margin: 0 auto; width: max-content;">Edit the post</h1>
@@ -52,4 +52,6 @@
     </div>
   </div>
 </div>
+
+<% } %>
 </div>

@@ -1,6 +1,5 @@
 const mongo = require('mongodb')
 const Post = require('../models/Post');
-const {format} = require('date-fns');
 const User = require('../models/User');
 
 
@@ -12,24 +11,28 @@ exports.getCreatePostView = (req, res) => {
 
 exports.postCreatePostView = (req, res) => {
     const {post_title, post_body} = req.body;
-    console.log(post_title);
-
+    const userid = req.user;
+    console.log(req.body);
     let errors = [];
 
     //Check if all fields have data in them
     if (!post_title || !post_body){
         errors.push({msg: "Please fill in all fields"});
-        return res.render("posts/create", { errors: errors });
+        // return res.render("posts/create", { errors: errors });
+        return res.send("Error");
     }
 
     const newPost = new Post({
-        userid: req.session.user._id,
+        // userid: req.session.user._id,
+        userid: userid,
         title: req.body.post_title,
         body: req.body.post_body
     });
     newPost.save()
     .then(post => {
-        res.redirect('/posts');
+        // res.redirect('/posts');
+        // res.set('Access-Control-Allow-Origin', '*');
+        res.status(200).json(post);
     })
     .catch(err => console.log(err));
 }
@@ -49,12 +52,15 @@ exports.getPosts = (req, res) => {
     })
     .then(posts => {
       // console.log(posts);
-      res.render("posts/posts", {
-        posts: posts,
-        isAuthenticated: req.session.isLoggedIn,
-        currentPage: currentPage,
-        numPages: numPages
-      });
+      // res.render("posts/posts", {
+      //   posts: posts,
+      //   isAuthenticated: req.session.isLoggedIn,
+      //   currentPage: currentPage,
+      //   numPages: numPages
+      // });
+      // res.set('Access-Control-Allow-Origin', 'localhost:3000');
+      res.status(200).json(posts);
+
     })
     .catch(err => {
       console.log(err);
@@ -68,10 +74,10 @@ exports.getPost = (req, res) => {
     .then(post => {
       let canEdit = false;
 
-      if(typeof req.session.user == 'undefined'){
+      if(typeof req.user == 'undefined'){
         loggedInUserId = "none";
       } else {
-        loggedInUserId = req.session.user._id.toString();
+        loggedInUserId = req.user;
       }
 
       if(post.userid.toString() == loggedInUserId){
@@ -80,10 +86,16 @@ exports.getPost = (req, res) => {
 
       User.findById(post.userid)
       .then(postAuthorObject => {
-        res.render("posts/post", {
-          post: post,
-          isAuthenticated: req.session.isLoggedIn,
-          canEdit: canEdit,
+        // res.render("posts/post", {
+        //   post: post,
+        //   isAuthenticated: req.session.isLoggedIn,
+        //   canEdit: canEdit,
+        //   authorName: postAuthorObject.name
+        // });
+        // res.set('Access-Control-Allow-Origin', '*');
+        res.status(200).json({
+          post,
+          canEdit,
           authorName: postAuthorObject.name
         });
       })

@@ -4,11 +4,17 @@ const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const session = require('express-session')
 const mongodb_session = require('connect-mongodb-session')(session);
-const PORT = process.env.PORT || 3000;
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const PORT = process.env.PORT;
 const DB_CONN = process.env.MONGO_URI;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
 
 const app = express();
+
 app.use(express.static(__dirname + '/public'));
+
 const session_store = new mongodb_session({
     uri: DB_CONN,
     collection: 'Sessions'
@@ -25,6 +31,7 @@ app.set('view engine', 'ejs');
 
 // Body Parser
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //Session Middleware
 app.use(session({
@@ -33,6 +40,13 @@ app.use(session({
     saveUninitialized: false,
     store: session_store
 }));
+
+app.use(cors({
+    origin: CORS_ORIGIN,
+    credentials: true
+}));
+
+app.use(cookieParser());
 
 // Routes
 app.use('/users', require('./routes/auth'));
