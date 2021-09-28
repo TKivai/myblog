@@ -41,6 +41,8 @@ app.use(session({
     store: session_store
 }));
 
+app.set("trust proxy", 1);
+
 app.use(cors({
     origin: CORS_ORIGIN,
     credentials: true
