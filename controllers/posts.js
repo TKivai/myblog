@@ -169,7 +169,7 @@ exports.deletePost = (req, res) => {
   Post.findOneAndDelete({ _id: new mongo.ObjectId(postId)})
     .then(deletedPost => {
         console.log(deletedPost);
-        res.redirect('/posts');
+        // res.redirect('/posts');
         res.status(200).json({
           msg: "Post Deleted Successfully"
         });
