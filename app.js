@@ -1,4 +1,4 @@
-// require('dotenv').config()
+process.env.NODE_ENV == 'production' ? null : require('dotenv').config();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
@@ -55,7 +55,7 @@ app.use('/users', require('./routes/auth'));
 app.use('/', require('./routes/index'));
 app.use('/posts', require('./routes/posts'));
 
-app.use((req, res, next) => {
+app.use((req, res) => {
     res.status(404).render("errors/404");
 });
 

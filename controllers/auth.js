@@ -16,12 +16,19 @@ exports.postLogin = (req, res) => {
     //Check if all fields have data in them
     if (!email || !password){
         errors.push({msg: "Please fill in all fields"});
-        return res.redirect('/users/login');
+        return res.status(400).json({
+            msg: "Error",
+            errors
+        });
     }
     User.findOne( { email: email})
     .then(user => {
         if (!user){
-            return res.redirect('/users/login');
+            errors.push({msg: "The user does not exist"});
+            return res.status(400).json({
+                msg: "Error",
+                errors
+            });
         }
 
         bcrypt.compare(password, user.password)
@@ -53,7 +60,11 @@ exports.postLogin = (req, res) => {
                 //     });
                 // });
             }
-            res.redirect('/users/login');
+            errors.push({msg: "Wrong username or password"});
+            return res.status(400).json({
+                msg: "Error",
+                errors
+            });
         })
         .catch(err => {
             res.redirect('/users/login');
@@ -84,22 +95,28 @@ exports.postRegister = (req, res) => {
 
     //Check if passwords match
     if (password !== password2){
-        errors.push({msg: "The passwords do not match"});
         // res.render("auth/register", {
         //      errors: errors,
         //      isAuthenticated: false
         // });
-        res.status(401).json(errors);
+        errors.push({msg: "The passwords do not match"});
+        return res.status(401).json({
+            msg: "Error",
+            errors
+        });
     } else {
         User.findOne({ email: email })
         .then(user => {
             if (user) {
-                errors.push({msg: "Email is already registered"});
                 // res.render("auth/register", {
                 //      errors: errors,
                 //      isAuthenticated: false
                 // });
-                res.status(401).json(errors);
+                errors.push({msg: "Email is already registered"});
+                return res.status(401).json({
+                    msg: "Error",
+                    errors
+                });
             } else {
                 const newUser = new User({
                     name: username,
@@ -115,7 +132,6 @@ exports.postRegister = (req, res) => {
                         .then(user => {
                             // res.redirect('/users/login');
                             // res.status(200).json(user);
-                            const token = generateAccessToken({user: user._id});
                             res.status(200).json({
                                 msg: "Success",
                             });

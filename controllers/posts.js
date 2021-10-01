@@ -19,7 +19,10 @@ exports.postCreatePostView = (req, res) => {
     if (!post_title || !post_body){
         errors.push({msg: "Please fill in all fields"});
         // return res.render("posts/create", { errors: errors });
-        return res.send("Error");
+        return res.status(400).json({
+          msg: "Error",
+          errors
+        })
     }
 
     const newPost = new Post({
@@ -122,10 +125,14 @@ exports.editPost = (req, res) => {
         
         let canEdit = false;
 
-        if(typeof req.session.user == 'undefined'){
+        if(typeof req.user == 'undefined'){
           loggedInUserId = "none";
+          return res.status(400).json({
+            msg: "Error",
+            errors
+          })
         } else {
-          loggedInUserId = req.session.user._id.toString();
+          loggedInUserId = req.user.toString();
         }
 
         if(post.userid.toString() == loggedInUserId){
@@ -134,10 +141,15 @@ exports.editPost = (req, res) => {
 
         User.findById(post.userid)
         .then(postAuthorObject => {
-          res.render("posts/post", {
-            post: post,
-            isAuthenticated: req.session.isLoggedIn,
-            canEdit: canEdit,
+          // res.render("posts/post", {
+          //   post: post,
+          //   isAuthenticated: req.session.isLoggedIn,
+          //   canEdit: canEdit,
+          //   authorName: postAuthorObject.name
+          // });
+          res.status(200).json({
+            post,
+            canEdit,
             authorName: postAuthorObject.name
           });
         })
@@ -155,10 +167,13 @@ exports.deletePost = (req, res) => {
   const postId = req.params.postId;
 
   Post.findOneAndDelete({ _id: new mongo.ObjectId(postId)})
-  .then(deletedPost => {
-    console.log(deletedPost);
-    res.redirect('/posts');
-  })
+    .then(deletedPost => {
+        console.log(deletedPost);
+        res.redirect('/posts');
+        res.status(200).json({
+          msg: "Post Deleted Successfully"
+        });
+    })
   .catch(err => {
     console.log(err);
   });
