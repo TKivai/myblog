@@ -37,17 +37,6 @@ exports.postLogin = (req, res) => {
                 // req.session.isLoggedIn = true;
                 // req.session.user = user;
 
-                const token = generateAccessToken({userid: user._id});
-                // res.cookie('token', token, { sameSite: "Lax"});
-                return res.status(200).json({
-                    msg: "Success",
-                    token: token,
-                    user: {
-                        name: user.name,
-                        email: user.email
-                    }
-                });
-                // http://localhost:3000
                 // return req.session.save(err => {
                 //     // console.log(err);
                 //     // res.redirect('/');
@@ -59,6 +48,23 @@ exports.postLogin = (req, res) => {
                 //         token: token
                 //     });
                 // });
+
+                // res.cookie('token', token, { sameSite: "Lax"});
+
+                const token = generateAccessToken(
+                    {
+                        userid: user._id
+                    }
+                );
+                
+                return res.status(200).json({
+                    msg: "Success",
+                    token: token,
+                    user: {
+                        name: user.name,
+                        email: user.email
+                    }
+                });
             }
             errors.push({msg: "Wrong username or password"});
             return res.status(400).json({
@@ -155,6 +161,6 @@ exports.logout = (req, res) => {
     });
 }
 
-function generateAccessToken(unique_identifier) {
-    return jwt.sign(unique_identifier, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
-  }
+function generateAccessToken(unique_data) {
+    return jwt.sign(unique_data, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}

@@ -42,7 +42,7 @@ exports.postCreatePostView = (req, res) => {
 
 
 exports.getPosts = (req, res) => {
-    const postsPerPage = 4;
+    const postsPerPage = 3;
     const currentPage = req.query.page || 1;
     let numPages;
 
@@ -62,7 +62,11 @@ exports.getPosts = (req, res) => {
       //   numPages: numPages
       // });
       // res.set('Access-Control-Allow-Origin', 'localhost:3000');
-      res.status(200).json(posts);
+      res.status(200).json({
+        posts,
+        currentPage: currentPage,
+        numPages: numPages
+      });
 
     })
     .catch(err => {
